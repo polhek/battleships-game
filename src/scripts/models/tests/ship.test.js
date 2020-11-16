@@ -1,4 +1,4 @@
-import { Ship } from '../factories/ship';
+import Ship from '../factories/ship';
 
 describe('Ship factory function which makes an object of ship, depending on its type...', () => {
   describe('Ship properties', () => {

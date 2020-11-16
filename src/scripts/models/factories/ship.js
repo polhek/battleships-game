@@ -1,6 +1,6 @@
 // let shipsData = [{ name: 'cruiser', length: 3 }];
 
-export const Ship = (ship) => {
+const Ship = (ship) => {
   const id = ship.name;
   const length = ship.length;
   let direction = 'horizontal';
@@ -44,3 +44,5 @@ export const Ship = (ship) => {
     isSunk,
   };
 };
+
+export default Ship;

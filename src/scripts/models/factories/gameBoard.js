@@ -1,8 +1,90 @@
-// !! Create Gameboard factory.
-// Note that we have not yet created any User Interface. We should know our code is coming together by running the tests. You shouldn’t be relying on console.logs or DOM methods to make sure your code is doing what you expect it to.
-// Gameboards should be able to place ships at specific coordinates by calling the ship factory function
-// Gameboards should have a receiveAttack function that takes a pair of coordinates, determines whether or not the attack hit a ship and then sends the ‘hit’ function to the correct ship, or records the coordinates of the missed shot.
-// Gameboards should keep track of missed attacks so they can display them properly.
-// Gameboards should be able to report whether or not all of their ships have been sunk.
+// !! auto position fleet
 
-const Gameboard = () => {};
+import shipsData from './helper';
+
+const Gameboard = () => {
+  // game board should be 10rows x 10cols...
+  let board = Array(10)
+    .fill(null)
+    .map(() => Array(10).fill(null));
+
+  let placedShips = [];
+  const areAllShipsPlaced = () => {
+    if (placedShips.length === shipsData.length) {
+      return true;
+    } else return false;
+  };
+
+  const getBoard = () => {
+    return board;
+  };
+  // when iterating over ships length, change coordinates...
+  const getCoordinates = (y, x, i, direction) => {
+    let y0 = y;
+    let x0 = x + i;
+
+    if (direction === 'vertical') {
+      y0 = y + i;
+      x0 = x;
+    }
+    return [y0, x0];
+  };
+
+  const placeShip = (ship, y, x) => {
+    const direction = ship.getDirection();
+    let valid = checkCoordinates(ship, y, x, direction);
+    if (valid === true) {
+      for (let i = 0; i < ship.length; i++) {
+        let [y0, x0] = getCoordinates(y, x, i, direction);
+        board[y0][x0] = { ship, index: i };
+      }
+      placedShips.push(ship);
+    }
+  };
+
+  // check if ship fits in the board...
+  const checkCoordinates = (ship, y, x, direction) => {
+    const cells = [];
+    for (let i = 0; i < ship.length; i++) {
+      const [y0, x0] = getCoordinates(y, x, i, direction);
+      let valid;
+      if (y0 < 10 && x0 < 10) {
+        cells.push(board[y0][x0]);
+      } else {
+        return false;
+      }
+    }
+    return cells.every((cell) => cell === null);
+  };
+
+  const receiveHit = (y, x) => {
+    if (board[y][x] === null) {
+      board[y][x] = 'miss';
+    } else if (board[y][x].ship) {
+      board[y][x].ship.doDamage(board[y][x].index);
+      board[y][x] = 'hit';
+    }
+    return board[y][x];
+  };
+
+  const areAllShipsSunk = () => {
+    return placedShips.every((ship) => ship.isSunk());
+  };
+
+  const reset = () => {
+    board = Array(10)
+      .fill(null)
+      .map(() => Array(10).fill(null));
+    placedShips = [];
+  };
+  return {
+    getBoard,
+    placeShip,
+    receiveHit,
+    areAllShipsPlaced,
+    areAllShipsSunk,
+    reset,
+  };
+};
+
+export default Gameboard;
