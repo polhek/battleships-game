@@ -284,3 +284,12 @@ main {
   color: white;
   font: $font;
 }
+
+@media only screen and (max-width: 600px) {
+  .player-settings {
+    margin-top: 650px;
+    margin-left: 10px;
+    top: 100;
+    left: 0;
+  }
+}
