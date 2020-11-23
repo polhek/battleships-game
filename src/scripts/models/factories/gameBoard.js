@@ -1,6 +1,4 @@
-// !! auto position fleet
-
-import shipsData from './helper';
+import { shipsData, randomCoordinates } from './helper';
 
 const Gameboard = () => {
   // game board should be 10rows x 10cols...
@@ -32,22 +30,24 @@ const Gameboard = () => {
 
   const placeShip = (ship, y, x) => {
     const direction = ship.getDirection();
-    let valid = checkCoordinates(ship, y, x, direction);
+    let valid = checkCoordinates(ship.length, y, x, direction);
     if (valid === true) {
       for (let i = 0; i < ship.length; i++) {
         let [y0, x0] = getCoordinates(y, x, i, direction);
         board[y0][x0] = { ship, index: i };
       }
       placedShips.push(ship);
+      return valid;
+    } else {
+      return valid;
     }
   };
 
   // check if ship fits in the board...
-  const checkCoordinates = (ship, y, x, direction) => {
+  const checkCoordinates = (length, y, x, direction) => {
     const cells = [];
-    for (let i = 0; i < ship.length; i++) {
+    for (let i = 0; i < length; i++) {
       const [y0, x0] = getCoordinates(y, x, i, direction);
-      let valid;
       if (y0 < 10 && x0 < 10) {
         cells.push(board[y0][x0]);
       } else {
@@ -71,6 +71,26 @@ const Gameboard = () => {
     return placedShips.every((ship) => ship.isSunk());
   };
 
+  const autoPlace = (ship) => {
+    const [y, x] = randomCoordinates();
+    const orientation = Math.round(Math.random());
+
+    if (orientation > 0.5) {
+      ship.changeDirection();
+    }
+    const place = placeShip(ship, y, x);
+    if (!place) {
+      autoPlace(ship);
+    }
+  };
+
+  const autoPlaceShips = (allShips) => {
+    for (let i = 0; i < allShips.length; i++) {
+      let ship = allShips[i];
+      autoPlace(ship);
+    }
+  };
+
   const reset = () => {
     board = Array(10)
       .fill(null)
@@ -83,6 +103,7 @@ const Gameboard = () => {
     receiveHit,
     areAllShipsPlaced,
     areAllShipsSunk,
+    autoPlaceShips,
     reset,
   };
 };

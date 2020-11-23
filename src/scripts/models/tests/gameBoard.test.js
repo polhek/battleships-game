@@ -1,6 +1,7 @@
 import Gameboard from '../factories/gameBoard';
 import Ship from '../factories/ship';
 import shipsData from '../factories/helper.js';
+import Player from '../factories/player';
 
 describe('gameboard should have all the interaction for the game, positioning, etc. ', () => {
   describe('board', () => {
@@ -147,6 +148,17 @@ describe('gameboard should have all the interaction for the game, positioning, e
       gameboard.receiveHit(1, 1);
       let result = gameboard.areAllShipsSunk();
       expect(result).toEqual(true);
+    });
+  });
+  describe('auto place all the ships', () => {
+    const gameboard = Gameboard();
+    const player = Player();
+    const ships = player.getShips();
+    gameboard.autoPlaceShips(ships);
+
+    test('all ships should be placed', () => {
+      let result = gameboard.areAllShipsPlaced();
+      expect(result).toBe(true);
     });
   });
 });
